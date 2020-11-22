@@ -14,12 +14,10 @@ export Actor, Addr,
 
  onmessage,
 
- addr, behavior,
-
- SendStyle, CopySendable, Sendable, Racing
+ addr, behavior
 
 """
-    abstract type Actor{TBehavior}
+    abstract type Actor
 
 `Actor` is the unit of concurrency, a single-threaded computation which reacts to incoming
 asynchronous messages by sending out other messages, by spawning other actors and/or by changing 
