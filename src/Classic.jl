@@ -35,13 +35,11 @@ abstract type Actor end
 abstract type Addr end
 
 """
-    send(sender::Actor, target::Addr, msg)
+    send!(sender::Actor, target::Addr, msg)
 
 Send the message `msg` from `sender` to the actor with `target` address.
-
-The type of `msg` must be marked as `Sendable`, `CopySendable` or `Racing`. See [`SendStyle`](@ref)
 """
-function send end
+function send! end
 
 """
     function spawn(spawner::Actor, behavior)::Addr
