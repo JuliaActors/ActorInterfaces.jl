@@ -52,7 +52,7 @@ The actor itself is not accessible directly.
 function spawn end
 
 """
-    function become(source::Actor, target)
+    become(source::Actor, target)
 
 Change the behavior of the `source` actor to `target`.
 
@@ -67,7 +67,7 @@ of the behavior, and it can also replace immutable behaviors.
 function become end
 
 """
-    function onmessage(me::Actor, msg)
+    onmessage(me::Actor, msg)
 
 Handle the incoming message `msg` received by actor `me`.
 
@@ -77,6 +77,14 @@ also work inside `onmessage`, but it is up to the implementation to provide any 
 concurrency of blocked actors, so blocking should generally avoided if possible.
 """
 function onmessage end
+
+"""
+    self()::Addr
+
+Get the address of your actor. To be called in behavior
+functions.
+"""
+function self end
 
 #
 # Not sure about the following two!
