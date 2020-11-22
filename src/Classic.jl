@@ -78,6 +78,13 @@ concurrency of blocked actors, so blocking should generally avoided if possible.
 """
 function onmessage end
 
+#
+# Not sure about the following two!
+#
+# since an actor is not accessible from the outside
+# shouldn't those not be internal functions rather than
+# beeing part of the interface?
+# 
 """
     function behavior(actor::Actor)
 
