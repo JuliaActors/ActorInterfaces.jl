@@ -17,7 +17,7 @@ export Actor, Addr,
  addr, behavior
 
 """
-    abstract type Actor
+    abstract type Actor{Bhv}
 
 `Actor` is the unit of concurrency, a single-threaded computation which reacts to incoming
 asynchronous messages by sending out other messages, by spawning other actors and/or by changing 
@@ -25,7 +25,7 @@ its own behavior.
 
 An `Actor` has a behavior and a state.
 """
-abstract type Actor end
+abstract type Actor{Bhv} end
 
 """
     abstract type Addr
