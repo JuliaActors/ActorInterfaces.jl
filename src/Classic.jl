@@ -36,42 +36,6 @@ abstract type Actor end
 """
 abstract type Addr end
 
-abstract type SendStyle end
-struct Sendable <: SendStyle end
-struct CopySendable <: SendStyle end
-struct Racing <: SendStyle end
-struct NonSendable <: SendStyle end
-
-"""
-    Trait SendStyle: Sendable, CopySendable, Racing, NonSendable
-
-Trait for marking types that can be sent to actors.
-    
-Sending mutable data between actors breaks the model and it may lead to data races,
-so - as a general rule - it should be avoided.
-
-By default, every type is `NonSendable`. You have to mark yor message types as `Sendable`,
-`CopySendable` or `Racing` before sending them. e.g.
-
-```
-abstract type MyMessage end
-Classic.SendStyle(::Type{<:MyMessage}) = Racing()
-
-struct SafeMsg end
-Classic.SendStyle(::Type{SafeMsg}) = Sendable()
-```
-
-`CopySendable` types will be deep copied before sending.
-
-When using `Sendable`, you have to be sure that it is really safe to share the data. Note that
-immutable structs may also contain mutable data deeper down.
-
-With `Racing` you warn the user to trait the message as unsafe shared state. It will
-be delivered to a special `onmessage` method with an extra ::Racing argument for the
-receiver to be warned.
-"""
-SendStyle(::Type{<:Any}) = NonSendable()
-
 """
     send(sender::Actor, target::Addr, msg)
 
@@ -80,16 +44,6 @@ Send the message `msg` from `sender` to the actor with `target` address.
 The type of `msg` must be marked as `Sendable`, `CopySendable` or `Racing`. See [`SendStyle`](@ref)
 """
 function send end
-
-function send(sender::Actor, target::Addr, msg)
-    send(sender, target, msg, SendStyle(typeof(msg)))
-end
-struct SendingNonSendable <: ActorException
-    type::Type
-end
-send(sender::Actor, target::Addr, msg, ::NonSendable) = throw(SendingNonSendable(typeof(msg)))
-send(sender::Actor, target::Addr, msg, ::CopySendable) = send(sender, target, deepcopy(msg), Sendable())
-# Implementations must at least handle Sendable and Racing
 
 """
     function spawn(spawner::Actor, behavior)::Addr
