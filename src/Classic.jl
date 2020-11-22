@@ -57,9 +57,12 @@ function spawn end
 Change the behavior of the `source` actor to `target`.
 
 Behavior change will be effective at the next message processing.
+
+????
 Note that when the behavior of `source` is mutable, then it can be
 mutated from `onmessage` directly. This function can change the type
 of the behavior, and it can also replace immutable behaviors.
+????
 """
 function become end
 
