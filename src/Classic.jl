@@ -42,7 +42,7 @@ Send the message `msg` from `sender` to the actor with `target` address.
 function send! end
 
 """
-    function spawn(spawner::Actor, behavior)::Addr
+    function spawn(behavior)::Addr
 
 Create a new `Actor` from the given `behavior` and and schedule it.
 
