@@ -25,11 +25,9 @@ export Actor, Addr,
 asynchronous messages by sending out other messages, by spawning other actors and/or by changing 
 its own behavior.
 
-`Actor` has a behavior, which can be of any type. The type of the behavior is used for message
-dispatch, and it can also hold the state of the actor. It is allowed for the behavior to
-be a mutable type, and if so, then it can be modified from [`onmessage`](@ref).
+An `Actor` has a behavior and a state.
 """
-abstract type Actor{TBehavior} end
+abstract type Actor end
 
 """
     abstract type Addr
