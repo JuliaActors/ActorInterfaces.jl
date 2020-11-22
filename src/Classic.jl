@@ -68,32 +68,13 @@ function become end
 
 """
     function onmessage(me::Actor, msg)
-    function onmessage(me::Actor, msg, ::Racing)
 
 Handle the incoming message `msg` received by actor `me`.
-
-The second form will be called for `Racing` messages to
-warn the programmer that the message breaks the actor model and accessing it
-without locking may introduce data races.
 
 Note on async and blocking: `@async` is allowed in `onmessage`, but async code should
 not operate directly on the actor state, only through messages. Blocking operations will
 also work inside `onmessage`, but it is up to the implementation to provide any or no
 concurrency of blocked actors, so blocking should generally avoided if possible.
-
-# Examples
-
-```
-mutable struct Counter
-    counter::Int
-end
-
-struct Increment <: MyMessage end
-
-function Classic.onmessage(me::Actor{Counter}, ::Increment)
-    behavior(me).counter += 1
-end
-```
 """
 function onmessage end
 
