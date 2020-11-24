@@ -57,17 +57,10 @@ The actor itself is not accessible directly.
 function spawn end
 
 """
-    become(source::Actor, target)
+    become(behavior)
 
-Change the behavior of the `source` actor to `target`.
-
-Behavior change will be effective at the next message processing.
-
-????
-Note that when the behavior of `source` is mutable, then it can be
-mutated from `onmessage` directly. This function can change the type
-of the behavior, and it can also replace immutable behaviors.
-????
+With this an actor replaces its current with a new `behavior`. 
+The new behavior will be effective at the next message processing.
 """
 function become end
 
