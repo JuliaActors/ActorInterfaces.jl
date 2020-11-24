@@ -35,16 +35,21 @@ abstract type Actor{Bhv} end
 abstract type Addr end
 
 """
-    send!(sender::Actor, target::Addr, msg)
+    send(recipient::Addr, msg)
 
-Send the message `msg` from `sender` to the actor with `target` address.
+Send the message `msg` to a `recipient` actor address.
 """
-function send! end
+function send end
 
 """
-    function spawn(behavior)::Addr
+```
+spawn(context, behavior) :: Addr
+spawn(behavior) :: Addr
+```
 
-Create a new `Actor` from the given `behavior` and and schedule it.
+Create a new `Actor` from the given `context` and `behavior`
+and schedule it. In the second form the context is delivered
+implicitly to the newly created actor.
 
 The returned address can be used to send messages to the newly created actor.
 The actor itself is not accessible directly.
