@@ -9,15 +9,12 @@ module Classic
 using ..ActorInterfaces
 
 export Actor, Addr,
+    send, spawn, become,
+    onmessage, self, context
 
- send, spawn, become,
-
- onmessage,
-
- addr, behavior
 
 """
-    abstract type Actor{Bhv}
+    Actor{Bhv}
 
 `Actor` is the unit of concurrency, a single-threaded computation which reacts to incoming
 asynchronous messages by sending out other messages, by spawning other actors and/or by changing 
@@ -28,7 +25,7 @@ An `Actor` has a behavior and a state.
 abstract type Actor{Bhv} end
 
 """
-    abstract type Addr
+    Addr
 
 `Addr` uniquely identifies an actor, and can be used as the target of messages.
 """
@@ -46,10 +43,9 @@ function send end
 spawn(context, behavior) :: Addr
 spawn(behavior) :: Addr
 ```
-
-Create a new `Actor` from the given `context` and `behavior`
-and schedule it. In the second form the context is delivered
-implicitly to the newly created actor.
+Create a new `Actor` with a `behavior` and schedule it in 
+a context. In the second form schedule it in the current
+context. 
 
 The returned address can be used to send messages to the newly created actor.
 The actor itself is not accessible directly.
@@ -77,35 +73,18 @@ concurrency of blocked actors, so blocking should generally avoided if possible.
 function onmessage end
 
 """
-    self()::Addr
+    self() :: Addr
 
 Get the address of your actor. To be called in behavior
 functions.
 """
 function self end
 
-#
-# Not sure about the following two!
-#
-# since an actor is not accessible from the outside
-# shouldn't those not be internal functions rather than
-# beeing part of the interface?
-# 
 """
-    function behavior(actor::Actor)
+    context()
 
-Return the behavior of the actor.
-
-The behavior can be of any type, it specifies how the actor reacts to events, and it
-holds the state of the actor.
+Return the current execution context.
 """
-function behavior end
+function context end
 
-"""
-    function addr(actor::Actor)
-
-Return the address of an actor.
-"""
-function addr end
-
-end # module Classic
+end
