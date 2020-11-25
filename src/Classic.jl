@@ -8,24 +8,7 @@ module Classic
 
 using ..ActorInterfaces
 
-export Actor, Addr,
-
- send, spawn, become,
-
- onmessage,
-
- addr, behavior
-
-"""
-    abstract type Actor{Bhv}
-
-`Actor` is the unit of concurrency, a single-threaded computation which reacts to incoming
-asynchronous messages by sending out other messages, by spawning other actors and/or by changing 
-its own behavior.
-
-An `Actor` has a behavior and a state.
-"""
-abstract type Actor{Bhv} end
+export Addr, @actor, self, send, spawn, become
 
 """
     abstract type Addr
@@ -42,14 +25,9 @@ Send the message `msg` to a `recipient` actor address.
 function send end
 
 """
-```
-spawn(context, behavior) :: Addr
-spawn(behavior) :: Addr
-```
+    spawn(behavior) :: Addr
 
-Create a new `Actor` from the given `context` and `behavior`
-and schedule it. In the second form the context is delivered
-implicitly to the newly created actor.
+Create a new actor from the given behavior` and schedule it.
 
 The returned address can be used to send messages to the newly created actor.
 The actor itself is not accessible directly.
@@ -59,53 +37,66 @@ function spawn end
 """
     become(behavior)
 
-With this an actor replaces its current with a new `behavior`. 
+Replace the behavior of the current actor with `behavior`. 
+
 The new behavior will be effective at the next message processing.
 """
 function become end
 
 """
-    onmessage(me::Actor, msg)
+    onmessage(me, msg)
 
-Handle the incoming message `msg` received by actor `me`.
+Handle the incoming message `msg` received by an actor with behavior `me`.
+
+Messages will be dispatched to methods of this function. Method definitions
+must be marked with `@actor` for technical reasons.
 
 Note on async and blocking: `@async` is allowed in `onmessage`, but async code should
 not operate directly on the actor state, only through messages. Blocking operations will
 also work inside `onmessage`, but it is up to the implementation to provide any or no
 concurrency of blocked actors, so blocking should generally avoided if possible.
+
+# Examples
+
+```
+mutable struct Counter
+    counter::Int
+end
+
+struct Increment end
+
+@actor function Classic.onmessage(me::Counter, msg::Increment)
+    me.counter += 1
+end
+```
 """
 function onmessage end
 
 """
     self()::Addr
 
-Get the address of your actor. To be called in behavior
-functions.
+Get the address of the current actor.
 """
 function self end
 
-#
-# Not sure about the following two!
-#
-# since an actor is not accessible from the outside
-# shouldn't those not be internal functions rather than
-# beeing part of the interface?
-# 
-"""
-    function behavior(actor::Actor)
+macro actor(onmessage_expr)
+    if applicable(_actortransform, onmessage_expr)
+        return _actortransform(onmessage_expr)
+    end
+    throw(MissingActorSystem())
+end
 
-Return the behavior of the actor.
-
-The behavior can be of any type, it specifies how the actor reacts to events, and it
-holds the state of the actor.
-"""
-function behavior end
+# ------------------------------
+# Interface fo implementations
+# ------------------------------
 
 """
-    function addr(actor::Actor)
+    _actortransform(onmessage_expr)
 
-Return the address of an actor.
+Transform the expression under `@actor`.
+
+Implementation is optional.
 """
-function addr end
+function _actortransform end
 
 end # module Classic
