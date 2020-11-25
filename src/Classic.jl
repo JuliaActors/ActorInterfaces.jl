@@ -79,24 +79,36 @@ Get the address of the current actor.
 """
 function self end
 
+"""
+    @actor
+
+    TODO
+"""
 macro actor(onmessage_expr)
-    if applicable(_actortransform, onmessage_expr)
-        return _actortransform(onmessage_expr)
-    end
-    throw(MissingActorSystem())
+    return _actortransform(onmessage_expr)
 end
 
-# ------------------------------
-# Interface fo implementations
-# ------------------------------
-
-"""
-    _actortransform(onmessage_expr)
-
-Transform the expression under `@actor`.
-
-Implementation is optional.
-"""
 function _actortransform end
+
+function needs_ctx(expr)
+    return expr.head == :call && expr.args[1] in (:(Classic.onmessage), :spawn, :self, :send, :become)
+end
+
+function inject_ctx!(expr)
+    if needs_ctx(expr) && expr.args[end] != :ctx
+        push!(expr.args, :ctx)
+    end
+    for subexpr in expr.args
+        subexpr isa Expr && inject_ctx!(subexpr)
+    end
+    return expr
+end
+
+function Classic._actortransform(expr)
+    if expr.head != :function ||  expr.args[1].args[1] != :(Classic.onmessage)
+        error("@actor only handles Classic.onmessage method definitions")
+    end
+    return esc(inject_ctx!(expr))
+end
 
 end # module Classic
