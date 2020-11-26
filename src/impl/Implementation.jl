@@ -1,8 +1,8 @@
 module Implementation
 
-export Context
+export Scheduler
 
-abstract type Context end
+abstract type Scheduler end
 
 include("Tick.jl")
 

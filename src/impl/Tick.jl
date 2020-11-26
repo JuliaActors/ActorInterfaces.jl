@@ -4,7 +4,7 @@ export tick!
 
 using ..Implementation
 
-function tick!(sdl::Context)
+function tick!(sdl::Scheduler)
     return false # No work left
 end
 
