@@ -8,7 +8,7 @@ module Classic
 
 using ..ActorInterfaces
 
-export Addr, @actor, self, send, spawn, become
+export Addr, @ctx, self, send, spawn, become
 
 """
     Addr
@@ -65,7 +65,7 @@ end
 
 struct Increment end
 
-@actor function Classic.onmessage(me::Counter, msg::Increment)
+@ctx function Classic.onmessage(me::Counter, msg::Increment)
     me.counter += 1
 end
 ```
@@ -80,13 +80,15 @@ Get the address of the current actor.
 function self end
 
 """
-    @actor
+    @ctx
 
-    TODO
+Inject the actor context into [`onmessage`](@ref) methods automatically.
+
+
 """
-macro actor(expr)
+macro ctx(expr)
     if expr.head != :function ||  expr.args[1].args[1] != :(Classic.onmessage)
-        error("@actor only handles Classic.onmessage method definitions")
+        error("@ctx only handles Classic.onmessage method definitions")
     end
     return esc(inject_ctx!(expr))
 end
