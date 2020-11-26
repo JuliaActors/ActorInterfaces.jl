@@ -11,7 +11,7 @@ using ..ActorInterfaces
 export Addr, @actor, self, send, spawn, become
 
 """
-    abstract type Addr
+    Addr
 
 `Addr` uniquely identifies an actor, and can be used as the target of messages.
 """
@@ -73,7 +73,7 @@ end
 function onmessage end
 
 """
-    self()::Addr
+    self() :: Addr
 
 Get the address of the current actor.
 """
@@ -84,11 +84,12 @@ function self end
 
     TODO
 """
-macro actor(onmessage_expr)
-    return _actortransform(onmessage_expr)
+macro actor(expr)
+    if expr.head != :function ||  expr.args[1].args[1] != :(Classic.onmessage)
+        error("@actor only handles Classic.onmessage method definitions")
+    end
+    return esc(inject_ctx!(expr))
 end
-
-function _actortransform end
 
 function needs_ctx(expr)
     return expr.head == :call && expr.args[1] in (:(Classic.onmessage), :spawn, :self, :send, :become)
@@ -104,11 +105,5 @@ function inject_ctx!(expr)
     return expr
 end
 
-function Classic._actortransform(expr)
-    if expr.head != :function ||  expr.args[1].args[1] != :(Classic.onmessage)
-        error("@actor only handles Classic.onmessage method definitions")
-    end
-    return esc(inject_ctx!(expr))
-end
 
-end # module Classic
+end
