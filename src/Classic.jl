@@ -18,44 +18,52 @@ export Addr, @ctx, self, send, spawn, become
 abstract type Addr end
 
 """
-    send(recipient::Addr, msg)
+    send(recipient::Addr, msg, [ctx])
 
 Send the message `msg` to a `recipient` actor address.
+
+The ctx argument can be automatically injected by [`@ctx`](@ref).
 """
 function send end
 
 """
-    spawn(behavior) :: Addr
+    spawn(behavior, [ctx]) :: Addr
 
-Create a new actor from the given behavior` and schedule it.
+Create a new actor from the given behavior and schedule it.
 
 The returned address can be used to send messages to the newly created actor.
 The actor itself is not accessible directly.
+
+The ctx argument can be automatically injected by [`@ctx`](@ref).
 """
 function spawn end
 
 """
-    become(behavior)
+    become(behavior, [ctx])
 
 Replace the behavior of the current actor with `behavior`. 
 
-The new behavior will be effective at the next message processing.
+The new behavior will be effective at the processing of the next message.
+
+The ctx argument can be automatically injected by [`@ctx`](@ref).
 """
 function become end
 
 """
-    onmessage(me, msg)
+    Classic.onmessage(me, msg, ctx)
+    @ctx Classic.onmessage(me, msg)
 
 Handle the incoming message `msg` received by an actor with behavior `me`.
 
-Messages will be dispatched to methods of this function. Method definitions
-must be marked with `@actor` for technical reasons.
+Messages will be dispatched to methods of this function.
 
 Note on async and blocking: `@async` is allowed in `onmessage`, but async code should
 not operate directly on the actor state, only through messages. Blocking operations will
-also work inside `onmessage`, but it is up to the implementation to provide any or no
-concurrency of blocked actors, so blocking should generally avoided if possible.
+also work inside `onmessage`, but in the Classic model it is up to the implementation to
+provide any or no concurrency of blocked actors, so blocking should generally be avoided
+if possible.
 
+    
 # Examples
 
 ```
@@ -73,9 +81,11 @@ end
 function onmessage end
 
 """
-    self() :: Addr
+    self([ctx]) :: Addr
 
 Get the address of the current actor.
+
+The ctx argument can be automatically injected by [`@ctx`](@ref).
 """
 function self end
 
@@ -84,7 +94,14 @@ function self end
 
 Inject the actor context into [`onmessage`](@ref) methods automatically.
 
+The "actor context" allows the runtime to identify the current actor efficiently.
+It is passed to `onmessage` and must be provided to every actor primitive
+call. It can either be handled explicitly by the user or implicitly by
+the @ctx macro.
 
+When an `onmessage` method definition is marked with `@ctx`, calls to `send`,
+`spawn`, etc. from it need not to handle the `ctx` argument, it will be injected
+by the macro.
 """
 macro ctx(expr)
     if expr.head != :function ||  expr.args[1].args[1] != :(Classic.onmessage)
@@ -107,5 +124,4 @@ function inject_ctx!(expr)
     return expr
 end
 
-
-end
+end # module
