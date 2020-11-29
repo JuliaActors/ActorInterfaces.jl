@@ -31,9 +31,48 @@ Concurrent Computation in Distributed Systems"](https://dl.acm.org/doi/book/10.5
 
 `ActorInterfaces.Classic` maps these to the primitives `send()`, `become()` and `spawn()`. The incoming communication will be dispatched to `onmessage()`.
 
-```julia
+Agha's stack example illustrates the API:
 
+```julia
+using ActorInterfaces.Classic
+
+struct Pop
+    customer::Addr
+end
+
+struct Push
+    content
+end
+
+struct StackNode
+    content
+    link::Union{Addr, Nothing} # The next node
+end
+
+struct Forwarder
+    target::Addr
+end
+
+@ctx function Classic.onmessage(me::Forwarder, msg)
+    send(me.target, msg)
+end
+
+@ctx function Classic.onmessage(me::StackNode, msg::Push)
+    p = spawn(StackNode(me.content, me.link))
+    become(StackNode(msg.content, p))
+end
+
+@ctx function Classic.onmessage(me::StackNode, msg::Pop)
+    if !isnothing(me.link)
+        become(Forwarder(me.link))
+    end
+    send(msg.customer, me.content)
+end
 ```
+
+_Please note that this runs inefficiently on implementations that lack forward-chain optimization._
+
+Actor libraries currently provide their own API for exchanging messages with actors from the outside of the actor system. It is not yet covered by ActorInterfaces. 
 
 ### Known implementations
 
