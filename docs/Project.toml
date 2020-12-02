@@ -1,5 +1,4 @@
 [deps]
-ActorInterfaces = "7e194583-e687-41a0-9133-1c22a29c80af"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 
 [compat]

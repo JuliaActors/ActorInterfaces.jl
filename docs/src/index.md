@@ -6,22 +6,9 @@ There is no such thing as *The* Actor Model, there are interpretations and exten
 ActorInterfaces tries to handle this diversity by defining a minimalistic base called the Classic
 Model, and extensions to it. 
 
-Current State: Early stage. The Classic Model is usable but not yet settled. No extension is defined yet. If you have an idea to discuss, please send a PR or create an issue.
+Current State: The Classic interface settled recently, major semantical changes are unlikely. Extensions will be added continously. If you have an extension idea, please open an issue or a topic on Discourse.
 
 Known implementations:
 
 - [`QuickActors.jl`](https://github.com/JuliaActors/QuickActors.jl), reference implementation.
 
-```@index
-```
-
-!!! info "Note"
-    Please refer the source for more details.
-
-```@autodocs
-Modules = [ActorInterfaces]
-```
-
-```@autodocs
-Modules = [ActorInterfaces.Classic]
-```

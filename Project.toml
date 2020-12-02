@@ -1,6 +1,6 @@
 name = "ActorInterfaces"
 uuid = "7e194583-e687-41a0-9133-1c22a29c80af"
-authors = ["Krisztián Schäffer, Paul Bayer"]
+authors = ["Krisztián Schäffer" ,"Paul Bayer"]
 version = "0.1.0"
 
 [compat]
