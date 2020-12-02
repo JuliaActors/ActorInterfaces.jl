@@ -6,8 +6,8 @@
  -->
 <!--
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaactors.github.io/ActorInterfaces.jl/stable)
-[![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://juliaactors.github.io/ActorInterfaces.jl/dev)
 -->
+[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaactors.github.io/ActorInterfaces.jl/dev)
 
 A formalization of the actor model family in Julia.
 
