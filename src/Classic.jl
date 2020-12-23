@@ -18,18 +18,19 @@ export Addr, @ctx, self, send, spawn, become
 abstract type Addr end
 
 """
-    send(recipient::Addr, msg, [ctx])
+    send(recipient::Addr, msg...; ctx)
 
-Send the message `msg` to a `recipient` actor address.
+Send the message `msg...` to a `recipient` actor address.
 
 The ctx argument can be automatically injected by [`@ctx`](@ref).
 """
 function send end
 
 """
-    spawn(behavior, [ctx]) :: Addr
+    spawn(behavior, args...; ctx) :: Addr
 
-Create a new actor from the given behavior and schedule it.
+Create a new actor with the given `behavior` and 
+arguments `args...` to it.
 
 The returned address can be used to send messages to the newly created actor.
 The actor itself is not accessible directly.
@@ -39,9 +40,10 @@ The ctx argument can be automatically injected by [`@ctx`](@ref).
 function spawn end
 
 """
-    become(behavior, [ctx])
+    become(behavior, args...; ctx)
 
-Replace the behavior of the current actor with `behavior`. 
+Replace the current actor behavior with the given
+`behavior` and arguments `args...` to it. 
 
 The new behavior will be effective at the processing of the next message.
 
@@ -50,7 +52,7 @@ The ctx argument can be automatically injected by [`@ctx`](@ref).
 function become end
 
 """
-    Classic.onmessage(me, msg, ctx)
+    Classic.onmessage(me, msg; ctx)
     @ctx Classic.onmessage(me, msg)
 
 Handle the incoming message `msg` received by an actor with behavior `me`.
@@ -81,7 +83,7 @@ end
 function onmessage end
 
 """
-    self([ctx]) :: Addr
+    self(; ctx) :: Addr
 
 Get the address of the current actor.
 
@@ -115,13 +117,21 @@ function needs_ctx(expr)
 end
 
 function inject_ctx!(expr)
-    if needs_ctx(expr) && expr.args[end] != :ctx
-        push!(expr.args, :ctx)
+    if needs_ctx(expr)
+        if length(expr.args) >= 2 && expr.args[2] isa Expr && expr.args[2].head == :parameters
+            push!(expr.args[2].args, :ctx)
+        else
+            param = Expr(:parameters)
+            push!(param.args, :ctx)
+            expr.args = length(expr.args) == 1 ?
+                [expr.args[1], param] :
+                [expr.args[1], param, expr.args[2:end]...]
+        end
     end
     for subexpr in expr.args
         subexpr isa Expr && inject_ctx!(subexpr)
     end
-    return expr
+    return expr.args
 end
 
 end # module
